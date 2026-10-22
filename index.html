@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tic Tac Toe | X vs O</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    color: white;
+    background: linear-gradient(135deg, #101426, #202b52, #39265c);
+}
+
+.container {
+    width: 100%;
+    max-width: 460px;
+    padding: 30px 24px;
+    text-align: center;
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 25px;
+    background: rgba(255,255,255,0.08);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+h1 {
+    font-size: 32px;
+    margin-bottom: 8px;
+}
+
+.subtitle {
+    color: #b9c4e7;
+    margin-bottom: 25px;
+    font-size: 14px;
+}
+
+label {
+    display: block;
+    text-align: left;
+    margin-bottom: 9px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+select {
+    width: 100%;
+    padding: 13px;
+    border: 1px solid #49567e;
+    border-radius: 12px;
+    background: #202947;
+    color: white;
+    font-size: 15px;
+    outline: none;
+    cursor: pointer;
+}
+
+.scoreboard {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin: 22px 0;
+}
+
+.score-card {
+    padding: 14px 5px;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 14px;
+    background: rgba(255,255,255,0.06);
+}
+
+.score-card span {
+    display: block;
+    color: #c1c9e2;
+    font-size: 12px;
+    margin-bottom: 9px;
+}
+
+.score-card strong {
+    font-size: 27px;
+}
+
+.x-score strong {
+    color: #67c7ff;
+}
+
+.o-score strong {
+    color: #ff83bd;
+}
+
+.draw-score strong {
+    color: #ffd36b;
+}
+
+.status {
+    min-height: 28px;
+    margin: 20px 0;
+    font-size: 19px;
+    font-weight: bold;
+}
+
+.board {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    width: 100%;
+    max-width: 350px;
+    margin: 0 auto 22px;
+}
+
+.cell {
+    aspect-ratio: 1;
+    min-width: 0;
+    border: 1px solid rgba(255,255,255,0.13);
+    border-radius: 17px;
+    background: #f1f4ff;
+    color: #19213c;
+    font-size: clamp(38px, 10vw, 60px);
+    font-weight: 900;
+    cursor: pointer;
+    transition: transform 0.15s, background 0.15s;
+}
+
+.cell:not(:disabled):hover {
+    transform: scale(1.04);
+    background: #dce8ff;
+}
+
+.cell.x {
+    color: #1688e8;
+}
+
+.cell.o {
+    color: #e83e86;
+}
+
+.cell.win {
+    background: #bdf7d0;
+    color: #116735;
+    border-color: #69dc94;
+}
+
+.cell:disabled {
+    cursor: default;
+}
+
+.buttons {
+    display: flex;
+    gap: 10px;
+}
+
+button.action {
+    flex: 1;
+    padding: 14px 8px;
+    border: none;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.15s;
+}
+
+button.action:hover {
+    transform: translateY(-2px);
+}
+
+.restart {
+    color: #111b36;
+    background: linear-gradient(90deg, #7bdcff, #a8b6ff);
+}
+
+.reset {
+    color: white;
+    background: #414b6d;
+}
+
+.message {
+    min-height: 18px;
+    margin-top: 18px;
+    color: #c2cbe5;
+    font-size: 12px;
+}
+
+footer {
+    margin-top: 20px;
+    font-size: 12px;
+    color: #aeb9d9;
+}
+
+@media (max-width: 380px) {
+    .container {
+        padding: 23px 15px;
+    }
+
+    h1 {
+        font-size: 27px;
+    }
+
+    .board {
+        gap: 7px;
+    }
+
+    .cell {
+        border-radius: 12px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>⭕ Tic Tac Toe</h1>
+    <p class="subtitle">Think smart. Play to win!</p>
+
+    <label for="mode">Choose Your Game Mode</label>
+
+    <select id="mode">
+        <option value="human-robot">👤 Human vs Robot</option>
+        <option value="human-human">👥 Human vs Human</option>
+        <option value="robot-robot">🤖 Robot vs Robot</option>
+    </select>
+
+    <div class="scoreboard">
+        <div class="score-card x-score">
+            <span id="labelX">You (X)</span>
+            <strong id="scoreX">0</strong>
+        </div>
+
+        <div class="score-card draw-score">
+            <span>Draws</span>
+            <strong id="draws">0</strong>
+        </div>
+
+        <div class="score-card o-score">
+            <span id="labelO">Robot (O)</span>
+            <strong id="scoreO">0</strong>
+        </div>
+    </div>
+
+    <div class="status" id="status" aria-live="polite">
+        Your turn! Choose a square.
+    </div>
+
+    <div class="board" id="board">
+        <button class="cell" data-index="0" aria-label="Square 1"></button>
+        <button class="cell" data-index="1" aria-label="Square 2"></button>
+        <button class="cell" data-index="2" aria-label="Square 3"></button>
+        <button class="cell" data-index="3" aria-label="Square 4"></button>
+        <button class="cell" data-index="4" aria-label="Square 5"></button>
+        <button class="cell" data-index="5" aria-label="Square 6"></button>
+        <button class="cell" data-index="6" aria-label="Square 7"></button>
+        <button class="cell" data-index="7" aria-label="Square 8"></button>
+        <button class="cell" data-index="8" aria-label="Square 9"></button>
+    </div>
+
+    <div class="buttons">
+        <button class="action restart" id="restart">
+            ↻ New Round
+        </button>
+
+        <button class="action reset" id="resetScores">
+            Reset Scores
+        </button>
+    </div>
+
+    <p class="message" id="message">
+        First to make a line of three wins!
+    </p>
+
+    <footer>Made with ❤️ using HTML, CSS & JavaScript</footer>
+
+</div>
+
+<script>
+"use strict";
+
+// 1. Get HTML elements
+const modeSelect = document.getElementById("mode");
+const cells = document.querySelectorAll(".cell");
+const statusText = document.getElementById("status");
+const messageText = document.getElementById("message");
+
+const scoreXText = document.getElementById("scoreX");
+const scoreOText = document.getElementById("scoreO");
+const drawsText = document.getElementById("draws");
+
+const labelX = document.getElementById("labelX");
+const labelO = document.getElementById("labelO");
+
+// 2. Game variables
+let board = Array(9).fill("");
+let currentPlayer = "X";
+let gameOver = false;
+let robotTimer = null;
+let winningCells = [];
+
+let scores = {
+    X: 0,
+    O: 0,
+    draw: 0
+};
+
+// All possible winning lines
+const winningCombinations = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6]
+];
+
+// 3. Find a winner
+function getWinner(position) {
+    for (const line of winningCombinations) {
+        const [a, b, c] = line;
+
+        if (
+            position[a] !== "" &&
+            position[a] === position[b] &&
+            position[b] === position[c]
+        ) {
+            return {
+                player: position[a],
+                line: line
+            };
+        }
+    }
+
+    return null;
+}
+
+// 4. Check if a player is a robot
+function isRobot(player) {
+    const mode = modeSelect.value;
+
+    if (mode === "robot-robot") {
+        return true;
+    }
+
+    if (mode === "human-robot" && player === "O") {
+        return true;
+    }
+
+    return false;
+}
+
+// 5. Update player names
+function updateNames() {
+    const mode = modeSelect.value;
+
+    if (mode === "human-robot") {
+        labelX.textContent = "You (X)";
+        labelO.textContent = "Robot (O)";
+    } else if (mode === "human-human") {
+        labelX.textContent = "Player X";
+        labelO.textContent = "Player O";
+    } else {
+        labelX.textContent = "Robot X";
+        labelO.textContent = "Robot O";
+    }
+}
+
+// 6. Update the score display
+function updateScores() {
+    scoreXText.textContent = scores.X;
+    scoreOText.textContent = scores.O;
+    drawsText.textContent = scores.draw;
+}
+
+// 7. Display the board
+function renderBoard() {
+    cells.forEach((cell, index) => {
+        cell.textContent = board[index];
+
+        cell.classList.toggle("x", board[index] === "X");
+        cell.classList.toggle("o", board[index] === "O");
+        cell.classList.toggle("win", winningCells.includes(index));
+
+        cell.disabled =
+            gameOver ||
+            board[index] !== "" ||
+            isRobot(currentPlayer);
+    });
+}
+
+// 8. Show the current turn
+function updateStatus() {
+    if (gameOver) return;
+
+    if (isRobot(currentPlayer)) {
+        statusText.textContent = `🤖 Robot ${currentPlayer} is thinking...`;
+    } else if (modeSelect.value === "human-human") {
+        statusText.textContent = `Player ${currentPlayer}'s turn`;
+    } else {
+        statusText.textContent = "Your turn! Choose a square.";
+    }
+}
+
+// 9. Handle a human's click
+function handleClick(index) {
+    if (gameOver || board[index] !== "") return;
+    if (isRobot(currentPlayer)) return;
+
+    playMove(index);
+}
+
+// 10. Make a move
+function playMove(index) {
+    if (gameOver || board[index] !== "") return;
+
+    board[index] = currentPlayer;
+
+    // Check if someone won
+    const result = getWinner(board);
+
+    if (result) {
+        gameOver = true;
+        winningCells = result.line;
+        scores[result.player]++;
+
+        updateScores();
+        renderBoard();
+
+        if (modeSelect.value === "human-robot") {
+            statusText.textContent =
+                result.player === "X"
+                    ? "🎉 You Win!"
+                    : "🤖 Robot Wins!";
+        } else if (modeSelect.value === "human-human") {
+            statusText.textContent =
+                `🏆 Player ${result.player} Wins!`;
+        } else {
+            statusText.textContent =
+                `🏆 Robot ${result.player} Wins!`;
+        }
+
+        messageText.textContent = "Press New Round to play again.";
+        return;
+    }
+
+    // Check for a draw
+    if (board.every(square => square !== "")) {
+        gameOver = true;
+        scores.draw++;
+
+        updateScores();
+        renderBoard();
+
+        statusText.textContent = "🤝 It's a Draw!";
+        messageText.textContent = "Well played! Try another round.";
+        return;
+    }
+
+    // Switch the player
+    currentPlayer = currentPlayer === "X" ? "O" : "X";
+
+    updateStatus();
+    renderBoard();
+
+    // Let the robot make its move
+    if (isRobot(currentPlayer)) {
+        scheduleRobotMove();
+    }
+}
+
+// 11. AI: choose the best possible move using minimax
+// This makes the robot unbeatable when it plays correctly.
+function minimax(position, player, depth) {
+    const result = getWinner(position);
+
+    if (result) {
+        if (result.player === "O") return 10 - depth;
+        return depth - 10;
+    }
+
+    if (position.every(square => square !== "")) {
+        return 0;
+    }
+
+    if (player === "O") {
+        let bestScore = -Infinity;
+
+        for (let i = 0; i < 9; i++) {
+            if (position[i] === "") {
+                position[i] = "O";
+
+                const score = minimax(position, "X", depth + 1);
+
+                position[i] = "";
+                bestScore = Math.max(bestScore, score);
+            }
+        }
+
+        return bestScore;
+    } else {
+        let bestScore = Infinity;
+
+        for (let i = 0; i < 9; i++) {
+            if (position[i] === "") {
+                position[i] = "X";
+
+                const score = minimax(position, "O", depth + 1);
+
+                position[i] = "";
+                bestScore = Math.min(bestScore, score);
+            }
+        }
+
+        return bestScore;
+    }
+}
+
+// 12. Find the best robot move
+function findBestMove() {
+    let bestScore = -Infinity;
+    let bestMove = -1;
+
+    for (let i = 0; i < 9; i++) {
+        if (board[i] === "") {
+            board[i] = "O";
+
+            const score = minimax(board, "X", 0);
+
+            board[i] = "";
+
+            if (score > bestScore) {
+                bestScore = score;
+                bestMove = i;
+            }
+        }
+    }
+
+    return bestMove;
+}
+
+// 13. Robot makes its move
+function robotMove() {
+    robotTimer = null;
+
+    if (gameOver || !isRobot(currentPlayer)) return;
+
+    let move;
+
+    if (modeSelect.value === "robot-robot") {
+        // X robot chooses a random available square.
+        // O robot uses minimax to play optimally.
+        if (currentPlayer === "X") {
+            const available = board
+                .map((value, index) => value === "" ? index : -1)
+                .filter(index => index !== -1);
+
+            move = available[
+                Math.floor(Math.random() * available.length)
+            ];
+        } else {
+            move = findBestMove();
+        }
+    } else {
+        move = findBestMove();
+    }
+
+    if (move !== -1) {
+        playMove(move);
+    }
+}
+
+// 14. Schedule a robot move
+function scheduleRobotMove() {
+    clearTimeout(robotTimer);
+
+    robotTimer = setTimeout(robotMove, 450);
+}
+
+// 15. Start a new round
+function newRound() {
+    clearTimeout(robotTimer);
+    robotTimer = null;
+
+    board = Array(9).fill("");
+    currentPlayer = "X";
+    gameOver = false;
+    winningCells = [];
+
+    updateNames();
+    updateStatus();
+    renderBoard();
+
+    messageText.textContent =
+        "First to make a line of three wins!";
+
+    // Robot vs Robot starts automatically
+    if (isRobot(currentPlayer)) {
+        scheduleRobotMove();
+    }
+}
+
+// 16. Connect the buttons
+cells.forEach((cell, index) => {
+    cell.addEventListener("click", () => {
+        handleClick(index);
+    });
+});
+
+modeSelect.addEventListener("change", newRound);
+
+document.getElementById("restart").addEventListener("click", newRound);
+
+document.getElementById("resetScores").addEventListener("click", () => {
+    scores = { X: 0, O: 0, draw: 0 };
+    updateScores();
+    newRound();
+});
+
+// 17. Launch the game
+updateScores();
+newRound();
+
+</script>
+
+</body>
+</html>
