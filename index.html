@@ -1,636 +1,575 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tic Tac Toe | X vs O</title>
+<title>Tic Tac Toe | Neon Arena</title>
 
 <style>
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg: #080b18;
+  --panel: #11172a;
+  --cyan: #39e7ff;
+  --pink: #ff55c8;
+  --text: #f4f7ff;
+  --muted: #9ba7c7;
 }
 
 body {
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-    font-family: Arial, sans-serif;
-    color: white;
-    background: linear-gradient(135deg, #101426, #202b52, #39265c);
+  min-height: 100vh;
+  font-family: Arial, sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(ellipse at top, #17234a 0%, transparent 55%),
+    var(--bg);
+  display: flex;
+  justify-content: center;
+  padding: 28px 14px;
 }
 
 .container {
-    width: 100%;
-    max-width: 460px;
-    padding: 30px 24px;
-    text-align: center;
-    border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 25px;
-    background: rgba(255,255,255,0.08);
-    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  width: 100%;
+  max-width: 470px;
+  text-align: center;
+}
+
+.logo {
+  font-size: 13px;
+  letter-spacing: 4px;
+  color: var(--cyan);
+  font-weight: bold;
+  margin-bottom: 12px;
 }
 
 h1 {
-    font-size: 32px;
-    margin-bottom: 8px;
+  font-size: clamp(32px, 8vw, 48px);
+  letter-spacing: 2px;
+}
+
+h1 span {
+  color: var(--pink);
 }
 
 .subtitle {
-    color: #b9c4e7;
-    margin-bottom: 25px;
-    font-size: 14px;
+  color: var(--muted);
+  margin: 10px 0 24px;
+  font-size: 14px;
+}
+
+.panel {
+  background: rgba(17, 23, 42, 0.94);
+  border: 1px solid #293657;
+  border-radius: 22px;
+  padding: 20px;
+  box-shadow: 0 15px 50px #0005;
+}
+
+.settings {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 18px;
+  text-align: left;
 }
 
 label {
-    display: block;
-    text-align: left;
-    margin-bottom: 9px;
-    font-size: 14px;
-    font-weight: bold;
+  font-size: 12px;
+  color: var(--muted);
+  display: block;
+  margin-bottom: 7px;
+}
+
+select, button {
+  font: inherit;
 }
 
 select {
-    width: 100%;
-    padding: 13px;
-    border: 1px solid #49567e;
-    border-radius: 12px;
-    background: #202947;
-    color: white;
-    font-size: 15px;
-    outline: none;
-    cursor: pointer;
+  width: 100%;
+  color: white;
+  background: #1a2340;
+  border: 1px solid #344366;
+  border-radius: 10px;
+  padding: 11px 8px;
+  outline: none;
 }
 
 .scoreboard {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    margin: 22px 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 9px;
+  margin-bottom: 20px;
 }
 
-.score-card {
-    padding: 14px 5px;
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 14px;
-    background: rgba(255,255,255,0.06);
+.score {
+  background: #0c1225;
+  border: 1px solid #263453;
+  padding: 12px 4px;
+  border-radius: 13px;
 }
 
-.score-card span {
-    display: block;
-    color: #c1c9e2;
-    font-size: 12px;
-    margin-bottom: 9px;
+.score .name {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 7px;
 }
 
-.score-card strong {
-    font-size: 27px;
+.score .number {
+  font-size: 25px;
+  font-weight: bold;
 }
 
-.x-score strong {
-    color: #67c7ff;
-}
-
-.o-score strong {
-    color: #ff83bd;
-}
-
-.draw-score strong {
-    color: #ffd36b;
-}
+.x-color { color: var(--cyan); }
+.o-color { color: var(--pink); }
 
 .status {
-    min-height: 28px;
-    margin: 20px 0;
-    font-size: 19px;
-    font-weight: bold;
+  min-height: 26px;
+  margin: 5px 0 15px;
+  font-size: 15px;
+  font-weight: bold;
 }
 
 .board {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    width: 100%;
-    max-width: 350px;
-    margin: 0 auto 22px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
 }
 
 .cell {
-    aspect-ratio: 1;
-    min-width: 0;
-    border: 1px solid rgba(255,255,255,0.13);
-    border-radius: 17px;
-    background: #f1f4ff;
-    color: #19213c;
-    font-size: clamp(38px, 10vw, 60px);
-    font-weight: 900;
-    cursor: pointer;
-    transition: transform 0.15s, background 0.15s;
+  aspect-ratio: 1;
+  border: 1px solid #2b3b60;
+  border-radius: 15px;
+  background: linear-gradient(145deg, #192441, #0d1428);
+  color: white;
+  font-size: clamp(42px, 12vw, 62px);
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform .15s, border-color .15s, background .15s;
 }
 
-.cell:not(:disabled):hover {
-    transform: scale(1.04);
-    background: #dce8ff;
+.cell:hover:not(:disabled) {
+  transform: translateY(-2px);
+  border-color: var(--cyan);
+  background: #202e4e;
+}
+
+.cell:focus-visible, button:focus-visible, select:focus-visible {
+  outline: 2px solid white;
+  outline-offset: 3px;
 }
 
 .cell.x {
-    color: #1688e8;
+  color: var(--cyan);
+  text-shadow: 0 0 18px #39e7ff66;
 }
 
 .cell.o {
-    color: #e83e86;
+  color: var(--pink);
+  text-shadow: 0 0 18px #ff55c866;
 }
 
 .cell.win {
-    background: #bdf7d0;
-    color: #116735;
-    border-color: #69dc94;
+  background: #243653;
+  border-color: #8affbd;
+  box-shadow: 0 0 18px #8affbd33;
 }
 
 .cell:disabled {
-    cursor: default;
+  cursor: default;
 }
 
 .buttons {
-    display: flex;
-    gap: 10px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 18px;
 }
 
-button.action {
-    flex: 1;
-    padding: 14px 8px;
-    border: none;
-    border-radius: 12px;
-    font-size: 14px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: transform 0.15s;
+.action {
+  border: 0;
+  padding: 13px 8px;
+  border-radius: 11px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform .15s, opacity .15s;
 }
 
-button.action:hover {
-    transform: translateY(-2px);
+.action:hover {
+  transform: translateY(-2px);
+  opacity: .9;
 }
 
-.restart {
-    color: #111b36;
-    background: linear-gradient(90deg, #7bdcff, #a8b6ff);
+.primary {
+  color: #07101e;
+  background: linear-gradient(100deg, var(--cyan), #88f7df);
 }
 
-.reset {
-    color: white;
-    background: #414b6d;
+.secondary {
+  color: white;
+  background: #263453;
+  border: 1px solid #3b4c70;
 }
 
-.message {
-    min-height: 18px;
-    margin-top: 18px;
-    color: #c2cbe5;
-    font-size: 12px;
+.hint {
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 18px;
+  line-height: 1.6;
 }
 
 footer {
-    margin-top: 20px;
-    font-size: 12px;
-    color: #aeb9d9;
+  margin-top: 22px;
+  color: #657294;
+  font-size: 11px;
+  letter-spacing: 2px;
 }
 
-@media (max-width: 380px) {
-    .container {
-        padding: 23px 15px;
-    }
-
-    h1 {
-        font-size: 27px;
-    }
-
-    .board {
-        gap: 7px;
-    }
-
-    .cell {
-        border-radius: 12px;
-    }
+@media (max-width: 360px) {
+  .panel { padding: 13px; }
+  .board { gap: 7px; }
+  .cell { border-radius: 11px; }
 }
 </style>
 </head>
 
 <body>
+<main class="container">
+  <div class="logo">✦ ARCADE EXPERIENCE ✦</div>
+  <h1>TIC <span>TAC</span> TOE</h1>
+  <p class="subtitle">Think smart. Make your move. Win the game.</p>
 
-<div class="container">
-
-    <h1>⭕ Tic Tac Toe</h1>
-    <p class="subtitle">Think smart. Play to win!</p>
-
-    <label for="mode">Choose Your Game Mode</label>
-
-    <select id="mode">
-        <option value="human-robot">👤 Human vs Robot</option>
-        <option value="human-human">👥 Human vs Human</option>
-        <option value="robot-robot">🤖 Robot vs Robot</option>
-    </select>
+  <section class="panel">
+    <div class="settings">
+      <div>
+        <label for="mode">GAME MODE</label>
+        <select id="mode">
+          <option value="ai">Human vs Robot</option>
+          <option value="human">Human vs Human</option>
+        </select>
+      </div>
+      <div>
+        <label for="difficulty">ROBOT LEVEL</label>
+        <select id="difficulty">
+          <option value="easy">Easy</option>
+          <option value="medium" selected>Medium</option>
+          <option value="hard">Hard</option>
+        </select>
+      </div>
+    </div>
 
     <div class="scoreboard">
-        <div class="score-card x-score">
-            <span id="labelX">You (X)</span>
-            <strong id="scoreX">0</strong>
-        </div>
-
-        <div class="score-card draw-score">
-            <span>Draws</span>
-            <strong id="draws">0</strong>
-        </div>
-
-        <div class="score-card o-score">
-            <span id="labelO">Robot (O)</span>
-            <strong id="scoreO">0</strong>
-        </div>
+      <div class="score">
+        <div class="name" id="xName">YOU · X</div>
+        <div class="number x-color" id="xScore">0</div>
+      </div>
+      <div class="score">
+        <div class="name">DRAWS</div>
+        <div class="number" id="drawScore">0</div>
+      </div>
+      <div class="score">
+        <div class="name" id="oName">ROBOT · O</div>
+        <div class="number o-color" id="oScore">0</div>
+      </div>
     </div>
 
     <div class="status" id="status" aria-live="polite">
-        Your turn! Choose a square.
+      Your turn — make a move!
     </div>
 
-    <div class="board" id="board">
-        <button class="cell" data-index="0" aria-label="Square 1"></button>
-        <button class="cell" data-index="1" aria-label="Square 2"></button>
-        <button class="cell" data-index="2" aria-label="Square 3"></button>
-        <button class="cell" data-index="3" aria-label="Square 4"></button>
-        <button class="cell" data-index="4" aria-label="Square 5"></button>
-        <button class="cell" data-index="5" aria-label="Square 6"></button>
-        <button class="cell" data-index="6" aria-label="Square 7"></button>
-        <button class="cell" data-index="7" aria-label="Square 8"></button>
-        <button class="cell" data-index="8" aria-label="Square 9"></button>
+    <div class="board" id="board" aria-label="Tic Tac Toe board">
+      <button class="cell" data-i="0" aria-label="Cell 1"></button>
+      <button class="cell" data-i="1" aria-label="Cell 2"></button>
+      <button class="cell" data-i="2" aria-label="Cell 3"></button>
+      <button class="cell" data-i="3" aria-label="Cell 4"></button>
+      <button class="cell" data-i="4" aria-label="Cell 5"></button>
+      <button class="cell" data-i="5" aria-label="Cell 6"></button>
+      <button class="cell" data-i="6" aria-label="Cell 7"></button>
+      <button class="cell" data-i="7" aria-label="Cell 8"></button>
+      <button class="cell" data-i="8" aria-label="Cell 9"></button>
     </div>
 
     <div class="buttons">
-        <button class="action restart" id="restart">
-            ↻ New Round
-        </button>
-
-        <button class="action reset" id="resetScores">
-            Reset Scores
-        </button>
+      <button class="action primary" id="newGame">↻ New Game</button>
+      <button class="action secondary" id="reset">Reset Scores</button>
     </div>
 
-    <p class="message" id="message">
-        First to make a line of three wins!
+    <p class="hint">
+      💡 Tip: Control the center and corners to improve your chances.
     </p>
+  </section>
 
-    <footer>Made with ❤️ using HTML, CSS & JavaScript</footer>
-
-</div>
+  <footer>NEON ARENA · PLAY YOUR WAY</footer>
+</main>
 
 <script>
-"use strict";
-
-// 1. Get HTML elements
-const modeSelect = document.getElementById("mode");
-const cells = document.querySelectorAll(".cell");
+const cells = [...document.querySelectorAll(".cell")];
+const mode = document.getElementById("mode");
+const difficulty = document.getElementById("difficulty");
 const statusText = document.getElementById("status");
-const messageText = document.getElementById("message");
 
-const scoreXText = document.getElementById("scoreX");
-const scoreOText = document.getElementById("scoreO");
-const drawsText = document.getElementById("draws");
+const xScoreText = document.getElementById("xScore");
+const oScoreText = document.getElementById("oScore");
+const drawScoreText = document.getElementById("drawScore");
+const xName = document.getElementById("xName");
+const oName = document.getElementById("oName");
 
-const labelX = document.getElementById("labelX");
-const labelO = document.getElementById("labelO");
-
-// 2. Game variables
-let board = Array(9).fill("");
-let currentPlayer = "X";
-let gameOver = false;
-let robotTimer = null;
-let winningCells = [];
-
-let scores = {
-    X: 0,
-    O: 0,
-    draw: 0
-};
-
-// All possible winning lines
-const winningCombinations = [
-    [0, 1, 2],
-    [3, 4, 5],
-    [6, 7, 8],
-    [0, 3, 6],
-    [1, 4, 7],
-    [2, 5, 8],
-    [0, 4, 8],
-    [2, 4, 6]
+const winningLines = [
+  [0, 1, 2], [3, 4, 5], [6, 7, 8],
+  [0, 3, 6], [1, 4, 7], [2, 5, 8],
+  [0, 4, 8], [2, 4, 6]
 ];
 
-// 3. Find a winner
-function getWinner(position) {
-    for (const line of winningCombinations) {
-        const [a, b, c] = line;
+let board = Array(9).fill("");
+let current = "X";
+let gameOver = false;
+let scores = { X: 0, O: 0, draw: 0 };
+let thinking = false;
 
-        if (
-            position[a] !== "" &&
-            position[a] === position[b] &&
-            position[b] === position[c]
-        ) {
-            return {
-                player: position[a],
-                line: line
-            };
-        }
+function getWinner(state) {
+  for (const line of winningLines) {
+    const [a, b, c] = line;
+    if (state[a] && state[a] === state[b] &&
+        state[a] === state[c]) {
+      return { winner: state[a], line };
     }
-
-    return null;
+  }
+  return null;
 }
 
-// 4. Check if a player is a robot
-function isRobot(player) {
-    const mode = modeSelect.value;
+function render() {
+  cells.forEach((cell, i) => {
+    cell.textContent = board[i];
+    cell.classList.toggle("x", board[i] === "X");
+    cell.classList.toggle("o", board[i] === "O");
+    cell.classList.remove("win");
 
-    if (mode === "robot-robot") {
-        return true;
-    }
-
-    if (mode === "human-robot" && player === "O") {
-        return true;
-    }
-
-    return false;
-}
-
-// 5. Update player names
-function updateNames() {
-    const mode = modeSelect.value;
-
-    if (mode === "human-robot") {
-        labelX.textContent = "You (X)";
-        labelO.textContent = "Robot (O)";
-    } else if (mode === "human-human") {
-        labelX.textContent = "Player X";
-        labelO.textContent = "Player O";
-    } else {
-        labelX.textContent = "Robot X";
-        labelO.textContent = "Robot O";
-    }
-}
-
-// 6. Update the score display
-function updateScores() {
-    scoreXText.textContent = scores.X;
-    scoreOText.textContent = scores.O;
-    drawsText.textContent = scores.draw;
-}
-
-// 7. Display the board
-function renderBoard() {
-    cells.forEach((cell, index) => {
-        cell.textContent = board[index];
-
-        cell.classList.toggle("x", board[index] === "X");
-        cell.classList.toggle("o", board[index] === "O");
-        cell.classList.toggle("win", winningCells.includes(index));
-
-        cell.disabled =
-            gameOver ||
-            board[index] !== "" ||
-            isRobot(currentPlayer);
-    });
-}
-
-// 8. Show the current turn
-function updateStatus() {
-    if (gameOver) return;
-
-    if (isRobot(currentPlayer)) {
-        statusText.textContent = `🤖 Robot ${currentPlayer} is thinking...`;
-    } else if (modeSelect.value === "human-human") {
-        statusText.textContent = `Player ${currentPlayer}'s turn`;
-    } else {
-        statusText.textContent = "Your turn! Choose a square.";
-    }
-}
-
-// 9. Handle a human's click
-function handleClick(index) {
-    if (gameOver || board[index] !== "") return;
-    if (isRobot(currentPlayer)) return;
-
-    playMove(index);
-}
-
-// 10. Make a move
-function playMove(index) {
-    if (gameOver || board[index] !== "") return;
-
-    board[index] = currentPlayer;
-
-    // Check if someone won
     const result = getWinner(board);
-
-    if (result) {
-        gameOver = true;
-        winningCells = result.line;
-        scores[result.player]++;
-
-        updateScores();
-        renderBoard();
-
-        if (modeSelect.value === "human-robot") {
-            statusText.textContent =
-                result.player === "X"
-                    ? "🎉 You Win!"
-                    : "🤖 Robot Wins!";
-        } else if (modeSelect.value === "human-human") {
-            statusText.textContent =
-                `🏆 Player ${result.player} Wins!`;
-        } else {
-            statusText.textContent =
-                `🏆 Robot ${result.player} Wins!`;
-        }
-
-        messageText.textContent = "Press New Round to play again.";
-        return;
+    if (result && result.line.includes(i)) {
+      cell.classList.add("win");
     }
 
-    // Check for a draw
-    if (board.every(square => square !== "")) {
-        gameOver = true;
-        scores.draw++;
+    cell.disabled = gameOver || thinking || board[i] !== "";
+    cell.setAttribute(
+      "aria-label",
+      `Cell ${i + 1}${board[i] ? ", " + board[i] : ", empty"}`
+    );
+  });
 
-        updateScores();
-        renderBoard();
+  xScoreText.textContent = scores.X;
+  oScoreText.textContent = scores.O;
+  drawScoreText.textContent = scores.draw;
 
-        statusText.textContent = "🤝 It's a Draw!";
-        messageText.textContent = "Well played! Try another round.";
-        return;
-    }
-
-    // Switch the player
-    currentPlayer = currentPlayer === "X" ? "O" : "X";
-
-    updateStatus();
-    renderBoard();
-
-    // Let the robot make its move
-    if (isRobot(currentPlayer)) {
-        scheduleRobotMove();
-    }
+  xName.textContent = mode.value === "ai" ? "YOU · X" : "PLAYER 1 · X";
+  oName.textContent = mode.value === "ai" ? "ROBOT · O" : "PLAYER 2 · O";
+  difficulty.disabled = mode.value === "human";
 }
 
-// 11. AI: choose the best possible move using minimax
-// This makes the robot unbeatable when it plays correctly.
-function minimax(position, player, depth) {
-    const result = getWinner(position);
-
-    if (result) {
-        if (result.player === "O") return 10 - depth;
-        return depth - 10;
-    }
-
-    if (position.every(square => square !== "")) {
-        return 0;
-    }
-
-    if (player === "O") {
-        let bestScore = -Infinity;
-
-        for (let i = 0; i < 9; i++) {
-            if (position[i] === "") {
-                position[i] = "O";
-
-                const score = minimax(position, "X", depth + 1);
-
-                position[i] = "";
-                bestScore = Math.max(bestScore, score);
-            }
-        }
-
-        return bestScore;
-    } else {
-        let bestScore = Infinity;
-
-        for (let i = 0; i < 9; i++) {
-            if (position[i] === "") {
-                position[i] = "X";
-
-                const score = minimax(position, "O", depth + 1);
-
-                position[i] = "";
-                bestScore = Math.min(bestScore, score);
-            }
-        }
-
-        return bestScore;
-    }
+function updateStatus(message) {
+  statusText.textContent = message;
 }
 
-// 12. Find the best robot move
-function findBestMove() {
-    let bestScore = -Infinity;
-    let bestMove = -1;
+function finishGame() {
+  const result = getWinner(board);
+
+  if (result) {
+    gameOver = true;
+    scores[result.winner]++;
+    updateStatus(
+      result.winner === "X"
+        ? (mode.value === "ai" ? "🎉 You win! Amazing!" : "🎉 Player 1 wins!")
+        : (mode.value === "ai" ? "🤖 Robot wins! Try again!" : "🎉 Player 2 wins!")
+    );
+    render();
+    return true;
+  }
+
+  if (board.every(Boolean)) {
+    gameOver = true;
+    scores.draw++;
+    updateStatus("🤝 It's a draw! Well played.");
+    render();
+    return true;
+  }
+
+  return false;
+}
+
+function playMove(index) {
+  if (gameOver || thinking || board[index]) return;
+
+  board[index] = current;
+
+  if (finishGame()) return;
+
+  current = current === "X" ? "O" : "X";
+  render();
+
+  if (mode.value === "ai" && current === "O") {
+    thinking = true;
+    render();
+    updateStatus("🤖 Robot is thinking...");
+
+    // Short pause makes the robot's turn feel natural.
+    window.setTimeout(() => {
+      if (gameOver || mode.value !== "ai") {
+        thinking = false;
+        render();
+        return;
+      }
+
+      const move = chooseRobotMove();
+      thinking = false;
+
+      if (move !== -1) {
+        board[move] = "O";
+        if (!finishGame()) {
+          current = "X";
+          updateStatus("Your turn — make a move!");
+        }
+      }
+
+      render();
+    }, 350);
+  } else {
+    updateStatus(current === "X"
+      ? (mode.value === "ai" ? "Your turn — make a move!" : "Player 1's turn (X)")
+      : "Player 2's turn (O)");
+  }
+}
+
+function chooseRobotMove() {
+  const empty = board
+    .map((value, i) => value === "" ? i : -1)
+    .filter(i => i !== -1);
+
+  if (!empty.length) return -1;
+
+  // Easy level: random legal move.
+  if (difficulty.value === "easy") {
+    return empty[Math.floor(Math.random() * empty.length)];
+  }
+
+  // Medium and hard: first win, then block, then use strategy.
+  const winMove = findImmediateMove("O");
+  if (winMove !== -1) return winMove;
+
+  const blockMove = findImmediateMove("X");
+  if (blockMove !== -1) return blockMove;
+
+  if (difficulty.value === "hard") {
+    return bestMove();
+  }
+
+  if (board[4] === "") return 4;
+
+  const corners = [0, 2, 6, 8].filter(i => board[i] === "");
+  if (corners.length) {
+    return corners[Math.floor(Math.random() * corners.length)];
+  }
+
+  return empty[Math.floor(Math.random() * empty.length)];
+}
+
+function findImmediateMove(player) {
+  for (let i = 0; i < 9; i++) {
+    if (board[i] !== "") continue;
+
+    board[i] = player;
+    const wins = Boolean(getWinner(board));
+    board[i] = "";
+
+    if (wins) return i;
+  }
+  return -1;
+}
+
+function bestMove() {
+  let bestScore = -Infinity;
+  let move = -1;
+
+  for (let i = 0; i < 9; i++) {
+    if (board[i] !== "") continue;
+
+    board[i] = "O";
+    const score = minimax(board, 0, false);
+    board[i] = "";
+
+    if (score > bestScore) {
+      bestScore = score;
+      move = i;
+    }
+  }
+  return move;
+}
+
+function minimax(state, depth, maximizing) {
+  const result = getWinner(state);
+
+  if (result) {
+    return result.winner === "O" ? 10 - depth : depth - 10;
+  }
+
+  if (state.every(Boolean)) return 0;
+
+  if (maximizing) {
+    let best = -Infinity;
 
     for (let i = 0; i < 9; i++) {
-        if (board[i] === "") {
-            board[i] = "O";
-
-            const score = minimax(board, "X", 0);
-
-            board[i] = "";
-
-            if (score > bestScore) {
-                bestScore = score;
-                bestMove = i;
-            }
-        }
+      if (state[i] !== "") continue;
+      state[i] = "O";
+      best = Math.max(best, minimax(state, depth + 1, false));
+      state[i] = "";
     }
 
-    return bestMove;
+    return best;
+  }
+
+  let best = Infinity;
+
+  for (let i = 0; i < 9; i++) {
+    if (state[i] !== "") continue;
+    state[i] = "X";
+    best = Math.min(best, minimax(state, depth + 1, true));
+    state[i] = "";
+  }
+
+  return best;
 }
 
-// 13. Robot makes its move
-function robotMove() {
-    robotTimer = null;
-
-    if (gameOver || !isRobot(currentPlayer)) return;
-
-    let move;
-
-    if (modeSelect.value === "robot-robot") {
-        // X robot chooses a random available square.
-        // O robot uses minimax to play optimally.
-        if (currentPlayer === "X") {
-            const available = board
-                .map((value, index) => value === "" ? index : -1)
-                .filter(index => index !== -1);
-
-            move = available[
-                Math.floor(Math.random() * available.length)
-            ];
-        } else {
-            move = findBestMove();
-        }
-    } else {
-        move = findBestMove();
-    }
-
-    if (move !== -1) {
-        playMove(move);
-    }
+function newGame() {
+  board = Array(9).fill("");
+  current = "X";
+  gameOver = false;
+  thinking = false;
+  updateStatus(mode.value === "ai"
+    ? "Your turn — make a move!"
+    : "Player 1's turn (X)");
+  render();
 }
 
-// 14. Schedule a robot move
-function scheduleRobotMove() {
-    clearTimeout(robotTimer);
-
-    robotTimer = setTimeout(robotMove, 450);
-}
-
-// 15. Start a new round
-function newRound() {
-    clearTimeout(robotTimer);
-    robotTimer = null;
-
-    board = Array(9).fill("");
-    currentPlayer = "X";
-    gameOver = false;
-    winningCells = [];
-
-    updateNames();
-    updateStatus();
-    renderBoard();
-
-    messageText.textContent =
-        "First to make a line of three wins!";
-
-    // Robot vs Robot starts automatically
-    if (isRobot(currentPlayer)) {
-        scheduleRobotMove();
-    }
-}
-
-// 16. Connect the buttons
-cells.forEach((cell, index) => {
-    cell.addEventListener("click", () => {
-        handleClick(index);
-    });
+cells.forEach(cell => {
+  cell.addEventListener("click", () => {
+    playMove(Number(cell.dataset.i));
+  });
 });
 
-modeSelect.addEventListener("change", newRound);
+document.getElementById("newGame").addEventListener("click", newGame);
 
-document.getElementById("restart").addEventListener("click", newRound);
-
-document.getElementById("resetScores").addEventListener("click", () => {
-    scores = { X: 0, O: 0, draw: 0 };
-    updateScores();
-    newRound();
+document.getElementById("reset").addEventListener("click", () => {
+  scores = { X: 0, O: 0, draw: 0 };
+  newGame();
 });
 
-// 17. Launch the game
-updateScores();
-newRound();
+mode.addEventListener("change", newGame);
+difficulty.addEventListener("change", newGame);
 
+render();
 </script>
-
 </body>
 </html>
